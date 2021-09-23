@@ -1,0 +1,83 @@
+INSERT INTO publicer VALUES ('spideyParker@gmail.com', '1234' , 'Peter', 'Parker','New York', 'Ingram Street', 20);
+INSERT INTO publicer VALUES ('nookisthebest@gmail.com', '5678' ,'Tom', 'Nook', 'New Leaf', 'Blossom Street', 10);
+
+INSERT INTO newspaper VALUES('Daily Bugle', 'daily', 'spideyParker@gmail.com');
+INSERT INTO newspaper VALUES ('Daily Prophet', 'daily','nookisthebest@gmail.com' );
+
+INSERT INTO issue VALUES(1985,'Daily Bugle', '2020-04-19', 27, 27, 3000, 2000);
+INSERT INTO issue VALUES(1789,'Daily Prophet','2020-04-20',30, 30,4000,3600);
+INSERT INTO issue VALUES(1986,'Daily Bugle', '2020-04-20', 28, 28, 3200, 3000);
+
+INSERT INTO journalists (email,password,j_name,j_last_name, hire_date, work_exp, resume, at_newspaper_jrnlst) 
+VALUES('mJane@journalists.com','6666','Mary','Jane','2012-01-03',23,'Worked in a science magazine and in a newspaper.','Daily Bugle');
+call money('mJane@journalists.com');
+INSERT INTO journalists (email,password,j_name,j_last_name, hire_date, work_exp, resume, at_newspaper_jrnlst) 
+VALUES('bazooka@journalists.com','5555','Baz','Nuke','2013-01-03',21,'Worked in a sports newspaper.','Daily Bugle');
+call money('bazooka@journalists.com');
+INSERT INTO journalists (email,password,j_name,j_last_name, hire_date, work_exp, resume, at_newspaper_jrnlst) 
+VALUES('jameson@journalists.com',null,'James Jonah', 'Jameson', '2009-04-06', 70, 'Worked in newspapers in Los Angeles and Florida.','Daily Bugle');
+call money('jameson@journalists.com');
+INSERT INTO journalists (email,password,j_name,j_last_name, hire_date, work_exp, resume, at_newspaper_jrnlst) 
+VALUES('rita.skeeter@journalists.com','7777', 'Rita', 'Skeeter', '2011-09-10', 32, 'Worked in her father magazine.', 'Daily Prophet');
+call money('rita.skeeter@journalists.com');
+INSERT INTO journalists (email,password,j_name,j_last_name, hire_date, work_exp, resume, at_newspaper_jrnlst) 
+VALUES('granger@journalists.com',null,'Hermiony', 'Granger', '2018-05-05',6,'Worked for an online magazine.', 'Daily Prophet');
+call money('granger@journalists.com');
+
+
+INSERT INTO administrators VALUES('snape@administrators.com', '1111' ,'Severus','Snape','2003-03-01',1200.5,'Cokeworth', "Spinner's End",32,'Logistics','Daily Prophet');
+INSERT INTO administrators VALUES('witcher@administrators.com', '2222' , 'Geralt', 'Rivian', '2016-02-13', 1500.0, 'Blaviken', 'Denken St.', 22, 'Secretary', 'Daily Prophet');
+INSERT INTO administrators VALUES('brant@administrators.com', '3333' ,'Betty', 'Brant', '2015-01-10', 1000.0, 'New York', 'Main Street', 796, 'Secretary', 'Daily Bugle');
+INSERT INTO administrators VALUES('steve.keene@administrators,com', '4444' ,'Steve', 'Keene', '2014-04-24', 1300.0, 'New York', 'Pacific St.', 744, 'Logistics', 'Daily Bugle'); 
+
+INSERT INTO phones VALUES('snape@administrators.com',01632960027);
+INSERT INTO phones VALUES('witcher@administrators.com',01632960838);
+INSERT INTO phones VALUES('brant@administrators.com',2025550197);
+INSERT INTO phones VALUES('steve.keene@administrators,com',2025550104);
+
+INSERT INTO chief_editors VALUES('granger@journalists.com', '3434' ,'nookisthebest@gmail.com');
+INSERT INTO chief_editors VALUES('jameson@journalists.com', '2323' , 'spideyParker@gmail.com');
+
+INSERT INTO category VALUES(NULL,'News','About politics and timeliness.',NULL);
+INSERT INTO category VALUES(NULL,'Arts', 'About news in art and events.', NULL);
+INSERT INTO category VALUES(NULL,'Showbiz', 'About celebrities', NULL);
+INSERT INTO category VALUES(NULL,'Health', 'News in medicine, healthy recipes', NULL);
+INSERT INTO category VALUES(NULL,'Movie Stars','Focuses on movie stars',3);
+
+INSERT INTO creates_category VALUES(2,'granger@journalists.com');
+INSERT INTO creates_category VALUES(3,'jameson@journalists.com');
+
+INSERT INTO article VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','The pandemic is here.',2,'About the new deadly virus CoVid-19',null,'Daily Bugle',1);
+INSERT INTO article VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc', 'Is a vegan diet actually good for you?', 1, 'Benefits and drawbacks of the vegan diet', null, 'Daily Prophet', 4); 
+INSERT INTO article VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc', 'Summer is canceled!?', 3, 'Summer during the pandemic', null, 'Daily bugle', 1);
+INSERT INTO article VALUES('C:\\Users\\Articles\\Submitted\\Art348.doc',"Mayor Osborns new measures.",1, 'About politics', 1985, 'Daily Bugle', 1); 
+INSERT INTO article VALUES('C:\\Users\\Articles\\Submitted\\Art732.doc','3 Reripes For Quick Meals',3,'Cooking recipes',null,'Daily Bugle',4);
+
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art732.doc','food');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','pandemic');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','CoVid-19');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc','Diet');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc','Vegan');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc','pandemic');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc','summer');
+INSERT INTO keywords VALUES('C:\\Users\\Articles\\Submitted\\Art348.doc','Mayor');
+
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','mJane@journalists.com','2020-02-12');
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','bazooka@journalists.com','2020-02-12');
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc','rita.skeeter@journalists.com','2020-02-18');
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc','mJane@journalists.com','2020-08-08');
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art348.doc','jameson@journalists.com','2020-02-08');
+INSERT INTO submits VALUES('C:\\Users\\Articles\\Submitted\\Art732.doc','bazooka@journalists.com','2020-04-3');
+
+INSERT INTO checks VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','jameson@journalists.com','Needs_Corrections',NULL,'2020-04-12');
+INSERT INTO checks VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc','granger@journalists.com','Accepted',NULL,'2020-04-12');
+INSERT INTO checks VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc','jameson@journalists.com','Needs_Corrections',NULL,'2020-08-12');
+INSERT INTO checks VALUES('C:\\Users\\Articles\\Submitted\\Art732.doc','jameson@journalists.com','Rejected',NULL,'2020-04-4');
+
+INSERT INTO sets_order VALUES('C:\\Users\\Articles\\Submitted\\Art348.doc',2,'jameson@journalists.com');
+INSERT INTO sets_order VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc',3,'granger@journalists.com');
+
+INSERT INTO images VALUES('C:\\Users\\Articles\\Submitted\\Art222.doc','C:\\Users\\Articles\\Submitted\\Art222\\salad');
+INSERT INTO images VALUES('C:\\Users\\Articles\\Submitted\\Art764.doc','C:\\Users\\Articles\\Submitted\\Art764\\virus');
+INSERT INTO images VALUES('C:\\Users\\Articles\\Submitted\\Art654.doc','C:\\Users\\Articles\\Submitted\\Art654\\beach');
+INSERT INTO images VALUES('C:\\Users\\Articles\\Submitted\\Art348.doc','C:\\Users\\Articles\\Submitted\\Art348\\osborn');

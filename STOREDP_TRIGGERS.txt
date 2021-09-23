@@ -1,0 +1,133 @@
+DELIMITER $
+CREATE PROCEDURE preview(IN issue_num INT(10), IN in_newsp VARCHAR(30))
+BEGIN
+	DECLARE left_pages INT(2);
+	DECLARE ar_path VARCHAR(200);
+	DECLARE Title VARCHAR(50);
+	DECLARE Writers VARCHAR(50);
+	DECLARE Check_date DATE;
+	DECLARE Pages INT(2);
+	DECLARE Article_Order TINYINT;
+	DECLARE last_page_used TINYINT;
+	DECLARE finishedFlag INT; 
+	DECLARE artCursor CURSOR FOR 
+		SELECT a.path_, a.title, c.date_of_check, a.num_of_pages, o.order_num FROM article AS a 
+		INNER JOIN issue AS i ON i.issue_number=a.in_issue
+		INNER JOIN checks AS c ON c.article=a.path_
+		INNER JOIN sets_order AS o ON o.article=a.path_
+		WHERE a.in_issue=issue_num AND a.in_newspaper= in_newsp
+		ORDER BY Article_Order ASC;
+	 DECLARE CONTINUE HANDLER FOR NOT FOUND SET finishedFlag=1;
+	 OPEN artCursor;
+	 SET finishedFlag=0;
+	 SET last_page_used=0;
+	 REPEAT
+	 FETCH artCursor INTO ar_path,Title, Check_date, Pages, Article_Order;
+	 IF (finishedFlag=0) THEN
+	 SELECT Title AS 'Title', Check_date AS 'Check date',  Pages AS 'Pages', Article_Order AS 'Order of Article', last_page_used+1 AS 'Starting Page';
+	 SELECT writer AS 'Writers' FROM submits AS s
+	 INNER JOIN article AS a ON s.article=a.path_
+	 WHERE article=ar_path;
+	 SET last_page_used=last_page_used+Pages;
+	 END IF;
+	 UNTIL (finishedFlag=1)
+	 END REPEAT;
+     CLOSE artCursor; 
+	 
+	SELECT pages_left AS "Number of pages left in the issue is: "
+	FROM issue 
+	WHERE issue_number=issue_num AND in_newspaper=in_newsp;
+
+	 
+END$
+DELIMITER ;
+
+
+
+
+DELIMITER $
+CREATE PROCEDURE money(IN email_j VARCHAR(50))
+BEGIN
+	DECLARE mon_exp INT(4);
+	DECLARE cur_d DATE;
+	DECLARE hire_d DATE;
+	DECLARE wage_j FLOAT(7);
+	DECLARE new_wage FLOAT(7);
+	DECLARE months INT(4);
+	
+	SELECT hire_date,wage,work_exp
+	INTO hire_d,wage_j,mon_exp
+	FROM journalists
+	WHERE email=email_j;
+	
+	SET cur_d=CURRENT_DATE();
+	SELECT TIMESTAMPDIFF(month, hire_d, cur_d) INTO months;
+	SET new_wage=wage_j+wage_j*5/1000*(months+mon_exp);
+	
+	UPDATE journalists
+	SET wage=new_wage
+	WHERE email=email_j;
+END$
+DELIMITER ;
+
+
+CREATE TRIGGER st_wage
+BEFORE INSERT ON journalists
+FOR EACH ROW 
+	SET NEW.wage=650;
+
+
+
+DELIMITER $$
+CREATE TRIGGER is_chief
+AFTER INSERT ON submits
+FOR EACH ROW
+BEGIN
+	DECLARE artcl VARCHAR(100);
+	DECLARE wrtr VARCHAR(50);
+	DECLARE curd DATE;
+	SET artcl=NEW.article;
+	SET wrtr=NEW.writer;
+	SET curd=CURDATE();
+	if (SELECT EXISTS(SELECT * FROM chief_editors WHERE chief_email=wrtr)) then
+		INSERT INTO checks (article, checked_by, status, date_of_check)
+		VALUES (artcl, wrtr, 'accepted', curd);
+	END IF;
+END$$
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER can_fit BEFORE INSERT ON article
+FOR EACH ROW
+BEGIN
+	DECLARE pag_l INT;
+	SELECT pages_left INTO pag_l FROM issue WHERE issue_number=NEW.in_issue;
+IF(pag_l - NEW.num_of_pages < 0) THEN
+	SIGNAL SQLSTATE '45000'
+	SET MESSAGE_TEXT = 'Not enough pages in issue.';
+ELSE 
+	UPDATE issue
+	SET pages_left = pages_left - NEW.num_of_pages 
+	WHERE issue_number=NEW.in_issue; 
+END IF;
+END //
+
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER can_fit2 BEFORE UPDATE ON article
+FOR EACH ROW
+BEGIN
+	DECLARE pag_l INT;
+	SELECT pages_left INTO pag_l FROM issue WHERE issue_number=NEW.in_issue;
+IF(pag_l - NEW.num_of_pages < 0) THEN
+	SIGNAL SQLSTATE '45000'
+	SET MESSAGE_TEXT = 'Not enough pages in issue.';
+ELSE 
+	UPDATE issue
+	SET pages_left = pages_left - NEW.num_of_pages 
+	WHERE issue_number=NEW.in_issue; 
+END IF;
+END //
+
+DELIMITER ;

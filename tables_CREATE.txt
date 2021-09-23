@@ -1,0 +1,175 @@
+CREATE TABLE publicer(
+	email VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NOT NULL,
+	first_name VARCHAR(20) NOT NULL,
+	last_name VARCHAR(30) NOT NULL,
+	city VARCHAR(20),
+	street VARCHAR(30),
+	st_number TINYINT,
+	PRIMARY KEY (email)
+)engine=InnoDB;
+
+
+CREATE TABLE newspaper(
+	name VARCHAR(30) NOT NULL,
+	publication_frequency ENUM ("daily","weekly","monthly") NOT NULL,
+	owner VARCHAR(50) NOT NULL,
+	PRIMARY KEY (name),
+	CONSTRAINT OWNER FOREIGN KEY (owner) REFERENCES publicer(email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE issue(
+	issue_number INT(10) NOT NULL,
+	in_newspaper VARCHAR(20) NOT NULL,
+	release_date DATE NOT NULL,
+	num_of_pages INT(2) DEFAULT'30',
+	pages_left INT(2),
+	num_of_prints INT(10) NOT NULL,
+	got_sold INT(10),
+	PRIMARY KEY(issue_number,in_newspaper),
+	CONSTRAINT IN_NEWSPAPER FOREIGN KEY(in_newspaper) REFERENCES newspaper(name)	
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+
+CREATE TABLE journalists(
+	email VARCHAR(50) NOT NULL,
+	password VARCHAR(50),
+	j_name VARCHAR(20) NOT NULL,
+	j_last_name VARCHAR(30) NOT NULL,
+	hire_date DATE NOT NULL,
+	wage FLOAT(7) ,
+	work_exp INT(5),
+	resume TEXT,
+	at_newspaper_jrnlst VARCHAR(20) NOT NULL,
+	PRIMARY KEY (email),
+	CONSTRAINT AT_NEWSPAPER_JRNLST FOREIGN KEY (at_newspaper_jrnlst) REFERENCES newspaper(name)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE administrators(
+	email VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NOT NULL,
+	adm_name VARCHAR(20) NOT NULL,
+	adm_last_name VARCHAR(30) NOT NULL,
+	hire_date DATE NOT NULL,
+	wage FLOAT(7) NOT NULL,
+	city VARCHAR(20),
+	street VARCHAR(30),
+	st_number INT(3),
+	duties ENUM("Secretary","Logistics"),
+	at_newspaper_adm VARCHAR(20) NOT NULL,
+	PRIMARY KEY (email),
+	CONSTRAINT AT_NEWSPAPER_ADM FOREIGN KEY (at_newspaper_adm) REFERENCES newspaper(name)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE phones(
+	adm_email VARCHAR(50) NOT NULL,
+	phone_number VARCHAR(20),
+	PRIMARY KEY(adm_email, phone_number),
+	CONSTRAINT ADM_EMAIL FOREIGN KEY (adm_email) REFERENCES administrators(email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE chief_editors(
+	chief_email VARCHAR(50) NOT NULL,
+	password VARCHAR(50) NOT NULL,
+	appointed_by VARCHAR(50) NOT NULL,
+	PRIMARY KEY (chief_email),
+	CONSTRAINT CHIEF_MAIL FOREIGN KEY (chief_email) REFERENCES journalists(email)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT EDITOR_MAIL FOREIGN KEY (appointed_by) REFERENCES publicer(email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE category(
+	code INT(10) NOT NULL AUTO_INCREMENT,
+	name TINYTEXT NOT NULL,
+	description TEXT,
+	parent INT(10) DEFAULT NULL,
+	PRIMARY KEY (code),
+	CONSTRAINT PAR_CATEGORY FOREIGN KEY (parent) REFERENCES category(code)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE creates_category(
+	category_code INT(10) NOT NULL,
+	set_by VARCHAR(50),
+	PRIMARY KEY (category_code),
+	CONSTRAINT CATEGORY_CODE FOREIGN KEY (category_code) REFERENCES category(code)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT CHIEF_SET FOREIGN KEY (set_by) REFERENCES chief_editors(chief_email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE article(
+	path_ VARCHAR(200) NOT NULL, 
+	title VARCHAR(50) NOT NULL,
+	num_of_pages INT(2) DEFAULT '1' NOT NULL,
+	synopsis TEXT,
+	in_issue INT(10),
+	in_newspaper VARCHAR(20) NOT NULL,
+	in_category INT(10) NOT NULL,
+	PRIMARY KEY (path_),
+	CONSTRAINT IN_ISSUE FOREIGN KEY (in_issue) REFERENCES issue(issue_number)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT IN_PAPER FOREIGN KEY (in_newspaper) REFERENCES issue(in_newspaper)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT IN_CATEG FOREIGN KEY (in_category) REFERENCES category(code)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE keywords(
+	in_article VARCHAR(200) NOT NULL,
+	word VARCHAR(30) NOT NULL,
+	PRIMARY KEY (in_article,word),
+	CONSTRAINT KEYWORDS FOREIGN KEY (in_article) REFERENCES article(path_)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+
+CREATE TABLE submits(
+	article VARCHAR(200) NOT NULL,
+	writer VARCHAR(50) NOT NULL, 
+	date_of_sub DATE NOT NULL, 
+	PRIMARY KEY(article, writer),
+	UNIQUE(article,writer),
+	CONSTRAINT SUB_ARTICLE FOREIGN KEY (article) REFERENCES article(path_)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT JOURN_WRITER FOREIGN KEY (writer) REFERENCES journalists(email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE checks(
+	article VARCHAR(200) NOT NULL,
+	checked_by VARCHAR(50),
+	status ENUM("Accepted", "Rejected", "Needs_Corrections","Check_Pending"),
+	comments TEXT,
+	date_of_check DATE,
+	PRIMARY KEY (article),
+	CONSTRAINT ARTICLE_CHECK FOREIGN KEY (article) REFERENCES article(path_)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT EDITOR_CHECK FOREIGN KEY (checked_by) REFERENCES chief_editors(chief_email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE sets_order(
+	article VARCHAR(200) NOT NULL, 
+	order_num TINYINT,
+	set_by VARCHAR(50) NOT NULL,
+	PRIMARY KEY (article),
+	CONSTRAINT ARTICLE_ORDER FOREIGN KEY (article) REFERENCES article(path_)
+	ON DELETE CASCADE ON UPDATE CASCADE,
+	CONSTRAINT ORDER_EDITOR FOREIGN KEY (set_by) REFERENCES chief_editors(chief_email)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
+
+CREATE TABLE images(
+	art_path VARCHAR(200) NOT NULL,
+	image_path VARCHAR(200) NOT NULL,
+	PRIMARY KEY(art_path,image_path),
+	CONSTRAINT IMAGE_PATH FOREIGN KEY (art_path) REFERENCES article(path_)
+	ON DELETE CASCADE ON UPDATE CASCADE
+)engine=InnoDB;
